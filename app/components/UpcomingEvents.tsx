@@ -41,12 +41,12 @@ export default function UpcomingEvents() {
 
   return (
     <div className="h-full flex flex-col bg-[#101926] text-white">
-      <div
-        className="py-3 px-4 font-bold text-2xl text-center"
-        style={{ background: 'linear-gradient(to right, #163E8C, #0367A6)' }}
-      >
-        Upcoming EVENTS
-      </div>
+     <div
+  className="py-3 px-4 font-bold text-4xl text-center"
+  style={{ background: 'linear-gradient(to right, #163E8C, #0367A6)' }}
+>
+  Upcoming EVENTS
+</div>
       <div className="flex-1 flex flex-col">
         {loading ? (
           <div className="h-full flex flex-col">
