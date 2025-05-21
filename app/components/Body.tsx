@@ -7,10 +7,24 @@ import UpcomingEvents from './UpcomingEvents'
 export default function Body() {
   // Images for the slideshow
   const images = [
-    "/graduation-hat.jpg",
-    "/campus-view.jpg",     // Add your actual image paths
-    "/students-studying.jpg",
-    "/library.jpg"
+    "/main-building.jpg",
+    "/campus-view.jpg",  
+    "/basketball.jpg",
+    "/dorm.jpg",
+    "/hall.jpg",
+    "/hall2.jpg",
+    "/library-westlake.jpg",
+    "/library2.jpg",
+    "/aerial-view2.jpg",
+    "/stadium.jpg",
+    "/main-buildingnight.jpg",
+    "/Gingko.jpg",
+    "/garden.jpg",   // Add your actual image paths
+    "/scientific-research.jpg",
+    "/aerial-view.jpg",
+
+
+    
   ];
   
   // State for tracking current image index
@@ -20,7 +34,7 @@ export default function Body() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 8000); // 8 seconds interval
+    }, 7000); // 7 seconds interval
     
     return () => clearInterval(interval);
   }, [images.length]);
