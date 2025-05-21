@@ -103,8 +103,8 @@ export default function Header() {
         </div>
       </div>
       
-      {/* Center: Weather (Black Background) */}
-      <div className="flex-1 bg-black h-full flex items-center justify-center">
+      {/* Center: Weather (Black Background) - Modified to position weather towards the right */}
+      <div className="flex-1 bg-black h-full flex items-center justify-end pr-16">
         {/* Weather content */}
         <div className="flex flex-col items-center justify-center">
           <div className="flex items-center justify-center space-x-3">
@@ -133,7 +133,7 @@ export default function Header() {
       >
         <div className="text-2xl font-medium">{dateStr} &nbsp;&nbsp;{timeStr}</div>
         <div className="text-md uppercase tracking-wide font-medium mt-2">
-          MBA APPLICATION DEADLINE: March 21
+          CSC APPLICATION DEADLINE: JULY 31
         </div>
       </div>
     </header>
