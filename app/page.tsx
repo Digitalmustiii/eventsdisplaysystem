@@ -1,4 +1,3 @@
-// app/page.tsx
 import Header from '@/app/components/Header'
 import Body from '@/app/components/Body'
 

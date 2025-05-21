@@ -1,64 +1,121 @@
 'use client'
 
 import Image from 'next/image'
+import { useState, useEffect } from 'react'
 import UpcomingEvents from './UpcomingEvents'
 
 export default function Body() {
+  // Images for the slideshow
+  const images = [
+    "/graduation-hat.jpg",
+    "/campus-view.jpg",     // Add your actual image paths
+    "/students-studying.jpg",
+    "/library.jpg"
+  ];
+  
+  // State for tracking current image index
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  // Effect for image rotation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 8000); // 8 seconds interval
+    
+    return () => clearInterval(interval);
+  }, [images.length]);
+  
   return (
     <div className="flex w-full h-[calc(100vh-96px)] bg-black">
-      {/* Left column: Events - 60% width */}
-      <div className="w-3/5 h-full">
+      {/* Left column: Events - exactly 50% width */}
+      <div className="w-1/2 h-full" style={{ width: '50%', flex: '0 0 50%' }}>
         <UpcomingEvents />
       </div>
       
-      {/* Right column: Graduation Image + Apply Now - 40% width */}
-      <div className="w-2/5 flex flex-col h-full">
-        {/* Main Image - Taking 60% of the height */}
-        <div className="h-3/5 relative overflow-hidden">
-          <Image
-            src="/graduation-hat.jpg"
-            alt="Graduation Hats"
-            fill
-            className="object-cover"
-            priority
-          />
-          {/* Overlay text on the image */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
-            <h1
-              className="text-7xl font-bold italic mb-4 text-white"
-              style={{
-                fontFamily: "'Playfair Display', Georgia, serif",
-                textShadow:
-                  "3px 3px 4px #111826, -3px -3px 4px #111826, 3px -3px 4px #111826, -3px 3px 4px #111826",
-                WebkitTextStroke: "1px #111826"
-              }}
+      {/* Right column: Slideshow + Apply Now - exactly 50% width */}
+      <div className="w-1/2 h-full flex flex-col" style={{ width: '50%', flex: '0 0 50%' }}>
+        {/* Slideshow - Taking 80% of the height */}
+        <div className="h-4/5 relative overflow-hidden">
+          {/* Image slideshow */}
+          {images.map((image, index) => (
+            <div 
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+              }`}
             >
-              Shape Your<br />Future
-            </h1>
-            <p
-              className="bg-white text-3xl px-6 py-2 rounded-md font-bold"
-              style={{ color: '#163E8C', fontFamily: "'Poppins', sans-serif" }}
-            >
-              Join our prestigious MBA<br />program
-            </p>
+              <Image
+                src={image}
+                alt={`Campus Scene ${index + 1}`}
+                fill
+                className="object-cover"
+                priority={index === 0}
+              />
+            </div>
+          ))}
+          
+          {/* Modern gradient overlay similar to airport/hospital displays */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/60"></div>
+          
+          {/* Image indicator dots - modern touch */}
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            {images.map((_, index) => (
+              <div 
+                key={index}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === currentImageIndex ? 'w-8 bg-white' : 'w-2 bg-white/50'
+                }`}
+              ></div>
+            ))}
           </div>
         </div>
         
-        {/* Apply Now Section - Taking 40% of the space */}
+        {/* Apply Now Section - Taking 20% of the space with improved layout */}
         <div 
-          className="h-2/5 flex flex-col justify-center pl-12 text-white rounded-xl"
+          className="h-1/5 flex items-center justify-center"
           style={{
-            background: 'linear-gradient(to right, #163E8C, #0367A6)'
+            background: 'linear-gradient(90deg, #0F2C59, #164B87)',
+            borderTop: '1px solid rgba(255,255,255,0.1)'
           }}
         >
-          <div className="font-bold text-5xl tracking-wide mb-6" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-            APPLY<br />NOW
-          </div>
-          <div 
-            className="bg-white text-2xl px-8 py-3 rounded-lg font-bold shadow-lg"
-            style={{ color: '#163E8C', fontFamily: "'Poppins', sans-serif", letterSpacing: '0.5px', width: '400px' }}
-          >
-            http://admission.uestc.edu.cn/
+          {/* Center aligned content with cohesive design */}
+          <div className="flex items-center justify-between w-10/12">
+            {/* Left side: Shape Your Future text */}
+            <div className="flex flex-col">
+              <h1 className="font-bold text-4xl text-white"
+                style={{
+                  fontFamily: "'Poppins', sans-serif",
+                  letterSpacing: "0.5px",
+                  textShadow: "0px 1px 3px rgba(0,0,0,0.3)"
+                }}
+              >
+                Shape Your Future
+              </h1>
+            </div>
+            
+            {/* Right side: Apply Now button and URL */}
+            <div className="flex flex-col">
+              <div className="text-2xl font-bold tracking-wider text-white mb-2 text-right"
+                style={{
+                  fontFamily: "'Montserrat', sans-serif"
+                }}
+              >
+                APPLY NOW
+              </div>
+              
+              <div 
+                className="bg-white text-base px-5 py-2 rounded-md font-medium flex items-center justify-center"
+                style={{ 
+                  color: '#0F2C59', 
+                  fontFamily: "'Poppins', sans-serif", 
+                  width: '280px',
+                  borderLeft: "3px solid #3B82F6",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                }}
+              >
+                http://admission.uestc.edu.cn/
+              </div>
+            </div>
           </div>
         </div>
       </div>
