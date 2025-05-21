@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { Sun, Cloud, CloudRain } from 'lucide-react'
+import { Sun, Cloud, CloudRain, CloudLightning, CloudSnow, CloudFog } from 'lucide-react'
 
 type Weather = {
   main: { temp: number },
@@ -14,15 +14,28 @@ export default function Header() {
   const [weatherData, setWeatherData] = useState<Weather | null>(null)
   const [now, setNow] = useState<Date>(new Date())
   
-  // 1) Fetch weather once on mount
+  // 1) Fetch weather once on mount and then every hour
   useEffect(() => {
-    fetch(
-      `https://api.openweathermap.org/data/2.5/weather` +
-      `?q=Chengdu,cn&units=metric&appid=${process.env.NEXT_PUBLIC_OPENWEATHER_API}`
-    )
-      .then(res => res.json())
-      .then((data: Weather) => setWeatherData(data))
-      .catch(console.error)
+    // Function to fetch weather data
+    const fetchWeather = () => {
+      fetch(
+        `https://api.openweathermap.org/data/2.5/weather` +
+        `?q=Chengdu,cn&units=metric&appid=${process.env.NEXT_PUBLIC_OPENWEATHER_API}`
+      )
+        .then(res => res.json())
+        .then((data: Weather) => setWeatherData(data))
+        .catch(console.error)
+    }
+    
+    // Initial fetch
+    fetchWeather()
+    
+    // Set up hourly fetching
+    const hourInMs = 60 * 60 * 1000
+    const intervalId = setInterval(fetchWeather, hourInMs)
+    
+    // Clean up
+    return () => clearInterval(intervalId)
   }, [])
   
   // 2) Update time every minute
@@ -55,28 +68,115 @@ export default function Header() {
     hour12: true,
   })
   
-  // Weather icon selection based on weather code
+  // Enhanced weather icon selection with modern styling
   const getWeatherIcon = () => {
     if (!weatherData || !weatherData.weather || weatherData.weather.length === 0) {
-      return <Sun className="text-yellow-300" size={56} />
+      return (
+        <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
+          <Sun className="text-yellow-300 drop-shadow-xl filter" size={42} strokeWidth={1.5} />
+        </div>
+      )
     }
     
     const weatherId = weatherData.weather[0].id;
     
     // Clear
     if (weatherId >= 800 && weatherId <= 802) {
-      return <Sun className="text-yellow-300" size={56} />
+      return (
+        <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
+          <Sun 
+            className="text-yellow-300 drop-shadow-xl" 
+            size={42} 
+            strokeWidth={1.5}
+            style={{ filter: 'drop-shadow(0 0 8px rgba(252, 211, 77, 0.6))' }}
+          />
+        </div>
+      )
     }
     // Clouds
     else if (weatherId >= 803 && weatherId <= 804) {
-      return <Cloud className="text-gray-200" size={56} />
+      return (
+        <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
+          <Cloud 
+            className="text-gray-200 drop-shadow-lg" 
+            size={42} 
+            strokeWidth={1.5} 
+            style={{ filter: 'drop-shadow(0 0 4px rgba(229, 231, 235, 0.5))' }}
+          />
+        </div>
+      )
     }
-    // Rain, drizzle, thunderstorm
-    else if (weatherId >= 200 && weatherId <= 531) {
-      return <CloudRain className="text-blue-200" size={56} />
+    // Rain, drizzle
+    else if ((weatherId >= 300 && weatherId <= 321) || (weatherId >= 500 && weatherId <= 531)) {
+      return (
+        <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
+          <CloudRain 
+            className="text-blue-300 drop-shadow-lg" 
+            size={42} 
+            strokeWidth={1.5}
+            style={{ filter: 'drop-shadow(0 0 4px rgba(147, 197, 253, 0.5))' }}
+          />
+        </div>
+      )
+    }
+    // Thunderstorm
+    else if (weatherId >= 200 && weatherId <= 232) {
+      return (
+        <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
+          <CloudLightning 
+            className="text-yellow-400 drop-shadow-lg" 
+            size={42} 
+            strokeWidth={1.5}
+            style={{ filter: 'drop-shadow(0 0 6px rgba(251, 191, 36, 0.6))' }}
+          />
+        </div>
+      )
+    }
+    // Snow
+    else if (weatherId >= 600 && weatherId <= 622) {
+      return (
+        <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
+          <CloudSnow 
+            className="text-blue-100 drop-shadow-lg" 
+            size={42} 
+            strokeWidth={1.5}
+            style={{ filter: 'drop-shadow(0 0 4px rgba(219, 234, 254, 0.6))' }}
+          />
+        </div>
+      )
+    }
+    // Mist, Fog, etc.
+    else if (weatherId >= 701 && weatherId <= 781) {
+      return (
+        <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
+          <CloudFog 
+            className="text-gray-300 drop-shadow-lg" 
+            size={42} 
+            strokeWidth={1.5}
+            style={{ filter: 'drop-shadow(0 0 4px rgba(209, 213, 219, 0.5))' }}
+          />
+        </div>
+      )
     }
     // Default
-    return <Sun className="text-yellow-300" size={56} />
+    return (
+      <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
+        <Sun 
+          className="text-yellow-300 drop-shadow-xl" 
+          size={42} 
+          strokeWidth={1.5}
+          style={{ filter: 'drop-shadow(0 0 8px rgba(252, 211, 77, 0.6))' }}
+        />
+      </div>
+    )
   }
   
   // Get formatted temperature
@@ -103,15 +203,25 @@ export default function Header() {
         </div>
       </div>
       
-      {/* Center: Weather (Black Background) - Modified to position weather towards the right */}
-      <div className="flex-1 bg-black h-full flex items-center justify-end pr-16">
-        {/* Weather content */}
-        <div className="flex flex-col items-center justify-center">
-          <div className="flex items-center justify-center space-x-3">
-            {getWeatherIcon()}
-            <div className="text-3xl font-bold">{getTemperature()}°C</div>
+      {/* Center: Weather (Black Background) - Properly aligned with right side */}
+      <div className="flex-1 bg-black h-full">
+        {/* This div takes all the space and pushes the weather to align with right side */}
+        <div className="w-full h-full flex justify-end items-center">
+          <div className="flex items-center space-x-5 pr-12">
+            <div className="flex flex-col items-center">
+              {getWeatherIcon()}
+              <span className="mt-1 text-lg font-semibold" style={{ 
+                textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+                fontVariantNumeric: 'tabular-nums' 
+              }}>
+                {getTemperature()}°
+              </span>
+            </div>
+            
+            <div className="text-base font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>
+              Chengdu, China
+            </div>
           </div>
-          <div className="text-lg mt-1">Chengdu, China</div>
         </div>
       </div>
       
@@ -133,7 +243,7 @@ export default function Header() {
       >
         <div className="text-2xl font-medium">{dateStr} &nbsp;&nbsp;{timeStr}</div>
         <div className="text-md uppercase tracking-wide font-medium mt-2">
-          CSC APPLICATION DEADLINE: JULY 31
+          MBA APPLICATION DEADLINE: March 21
         </div>
       </div>
     </header>
