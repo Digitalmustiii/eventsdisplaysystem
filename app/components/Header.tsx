@@ -217,7 +217,7 @@ export default function Header() {
                 {getTemperature()}°
               </span>
             </div>
-            <div className="text-xs font-medium hidden sm:block" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>
+            <div className="text-xs font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>
               Chengdu
             </div>
           </div>

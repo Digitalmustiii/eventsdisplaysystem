@@ -15,10 +15,10 @@ export default function UpcomingEvents() {
   const [loading, setLoading] = useState(true)
   const [maxEvents, setMaxEvents] = useState(5) // Default to desktop view
 
-  // Set max events based on screen size
+  // Set max events based on screen size - Always show 5 events
   useEffect(() => {
     const updateMaxEvents = () => {
-      setMaxEvents(window.innerWidth < 1024 ? 3 : 5)
+      setMaxEvents(5) // Always show 5 events regardless of screen size
     }
 
     // Set initial value
@@ -66,13 +66,13 @@ export default function UpcomingEvents() {
         {loading ? (
           <div className="h-full flex flex-col">
             {/* Show loading items based on maxEvents */}
-            {Array.from({ length: maxEvents }).map((_, i) => (
+            {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
                 className="flex border-b border-gray-600 lg:h-1/5 h-1/3"
               >
                 <div className="w-full flex justify-center items-center">
-                  {Math.floor(maxEvents / 2) === i && <span className="text-sm lg:text-base">Loading events...</span>}
+                  {Math.floor(5 / 2) === i && <span className="text-sm lg:text-base">Loading events...</span>}
                 </div>
               </div>
             ))}
