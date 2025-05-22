@@ -1,7 +1,7 @@
 //components/EventAdmin.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { format } from 'date-fns'
 
 type Event = {
@@ -23,7 +23,47 @@ export default function EventAdmin() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
-  const fetchEvents = () => {
+  // Get current date in Chengdu timezone (UTC+8)
+  const getChengduDate = () => {
+    const now = new Date()
+    // Convert to Chengdu time (UTC+8)
+    const chengduTime = new Date(now.getTime() + (8 * 60 * 60 * 1000) + (now.getTimezoneOffset() * 60 * 1000))
+    return chengduTime
+  }
+
+  // Get minimum date (today in Chengdu timezone)
+  const getMinDate = () => {
+    const chengduDate = getChengduDate()
+    return format(chengduDate, 'yyyy-MM-dd')
+  }
+
+  // Check if an event has expired based on Chengdu time
+  const isEventExpired = (eventDate: string, eventTime?: string) => {
+    const chengduNow = getChengduDate()
+    const eventDateTime = new Date(eventDate)
+    
+    if (eventTime) {
+      // Parse time (e.g., "2:30 PM" -> set hours and minutes)
+      const timeMatch = eventTime.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i)
+      if (timeMatch) {
+        let hours = parseInt(timeMatch[1])
+        const minutes = parseInt(timeMatch[2])
+        const ampm = timeMatch[3].toUpperCase()
+        
+        if (ampm === 'PM' && hours !== 12) hours += 12
+        if (ampm === 'AM' && hours === 12) hours = 0
+        
+        eventDateTime.setHours(hours, minutes, 0, 0)
+      }
+    } else {
+      // If no time specified, consider event expired at end of day
+      eventDateTime.setHours(23, 59, 59, 999)
+    }
+    
+    return chengduNow > eventDateTime
+  }
+
+  const fetchEvents = useCallback(() => {
     setLoading(true)
     setError('')
     fetch('/api/admin/events')
@@ -40,16 +80,90 @@ export default function EventAdmin() {
         setError('Failed to load events. Please try again.')
       })
       .finally(() => setLoading(false))
-  }
+  }, [])
+
+  // Auto-delete expired events
+  const deleteExpiredEvents = useCallback(async () => {
+    const expiredEvents = events.filter(event => 
+      isEventExpired(event.event_date, event.time)
+    )
+    
+    for (const event of expiredEvents) {
+      try {
+        await fetch('/api/admin/events', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: event.id })
+        })
+        console.log(`Auto-deleted expired event: ${event.title}`)
+      } catch (err) {
+        console.error(`Failed to auto-delete event ${event.id}:`, err)
+      }
+    }
+    
+    if (expiredEvents.length > 0) {
+      await fetchEvents() // Refresh the list
+    }
+  }, [events, fetchEvents])
 
   useEffect(() => {
     fetchEvents()
-  }, [])
+  }, [fetchEvents])
+
+  // Auto-delete expired events when events are loaded
+  useEffect(() => {
+    if (events.length > 0) {
+      deleteExpiredEvents()
+    }
+  }, [events, deleteExpiredEvents])
+
+  // Set up interval to check for expired events every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (events.length > 0) {
+        deleteExpiredEvents()
+      }
+    }, 60000) // Check every minute
+
+    return () => clearInterval(interval)
+  }, [events, deleteExpiredEvents])
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
     setError('')
+    
+    // Validate date is not in the past
+    const selectedDate = new Date(date)
+    const chengduToday = getChengduDate()
+    chengduToday.setHours(0, 0, 0, 0) // Reset time for date comparison
+    
+    if (selectedDate < chengduToday) {
+      setError('Cannot create events for past dates')
+      setSubmitting(false)
+      return
+    }
+    
+    // If same day and time is provided, validate time is not in the past
+    if (time && format(selectedDate, 'yyyy-MM-dd') === format(chengduToday, 'yyyy-MM-dd')) {
+      const timeMatch = time.match(/(\d{1,2}):(\d{2})/)
+      if (timeMatch) {
+        let hours = parseInt(timeMatch[1])
+        const minutes = parseInt(timeMatch[2])
+        
+        if (timeAmPm === 'PM' && hours !== 12) hours += 12
+        if (timeAmPm === 'AM' && hours === 12) hours = 0
+        
+        const eventDateTime = new Date(selectedDate)
+        eventDateTime.setHours(hours, minutes, 0, 0)
+        
+        if (eventDateTime <= getChengduDate()) {
+          setError('Cannot create events for past times')
+          setSubmitting(false)
+          return
+        }
+      }
+    }
     
     // Format time with AM/PM if time is provided
     const formattedTime = time ? `${time} ${timeAmPm}` : ''
@@ -202,12 +316,15 @@ export default function EventAdmin() {
         <div className="p-6">
           <form onSubmit={handleAdd} className="grid gap-5">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Date</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Date <span className="text-xs text-gray-400">(Chengdu Time)</span>
+              </label>
               <input
                 type="date"
                 className="w-full px-4 py-2.5 bg-[#171f2e] border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 value={date}
                 onChange={e => setDate(e.target.value)}
+                min={getMinDate()}
                 required
               />
             </div>

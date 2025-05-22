@@ -24,8 +24,9 @@ export default function UpcomingEvents() {
         const sorted = data.sort(
           (a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime()
         )
-        // Take only the first 5 events
-        setEvents(sorted.slice(0, 5))
+        // Take only the first 5 events for desktop, 3 for mobile
+        const maxEvents = window.innerWidth < 1024 ? 3 : 5
+        setEvents(sorted.slice(0, maxEvents))
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false))
@@ -41,23 +42,24 @@ export default function UpcomingEvents() {
 
   return (
     <div className="h-full flex flex-col bg-[#101926] text-white">
-     <div
-  className="py-3 px-4 font-bold text-4xl text-center"
-  style={{ background: 'linear-gradient(to right, #163E8C, #0367A6)' }}
->
-  Upcoming EVENTS
-</div>
+      <div
+        className="py-2 lg:py-3 px-2 lg:px-4 font-bold text-lg sm:text-xl lg:text-4xl text-center"
+        style={{ background: 'linear-gradient(to right, #163E8C, #0367A6)' }}
+      >
+        Upcoming EVENTS
+      </div>
+      
       <div className="flex-1 flex flex-col">
         {loading ? (
           <div className="h-full flex flex-col">
-            {Array.from({ length: 5 }).map((_, i) => (
+            {/* Show fewer loading items on mobile */}
+            {Array.from({ length: window.innerWidth < 1024 ? 3 : 5 }).map((_, i) => (
               <div
                 key={i}
-                className="flex border-b border-gray-600"
-                style={{ height: '20%' }}
+                className="flex border-b border-gray-600 lg:h-1/5 h-1/3"
               >
                 <div className="w-full flex justify-center items-center">
-                  {i === 2 && <span>Loading events...</span>}
+                  {Math.floor((window.innerWidth < 1024 ? 3 : 5) / 2) === i && <span className="text-sm lg:text-base">Loading events...</span>}
                 </div>
               </div>
             ))}
@@ -69,20 +71,22 @@ export default function UpcomingEvents() {
               return (
                 <div
                   key={event.id}
-                  className="flex border-b border-gray-600"
-                  style={{ height: '20%' }}
+                  className="flex border-b border-gray-600 lg:h-1/5 h-1/3"
                 >
-                  <div className="w-24 flex flex-col items-center justify-center bg-[#101926]">
-                    <span className="text-4xl font-bold">{day}</span>
-                    <span className="text-xl font-medium text-gray-300">{month}</span>
+                  {/* Date column - responsive width */}
+                  <div className="w-16 sm:w-20 lg:w-24 flex flex-col items-center justify-center bg-[#101926]">
+                    <span className="text-xl sm:text-2xl lg:text-4xl font-bold">{day}</span>
+                    <span className="text-sm sm:text-base lg:text-xl font-medium text-gray-300">{month}</span>
                   </div>
-                  <div className="flex-1 p-4 pl-5 flex flex-col justify-center bg-[#101926]">
-                    <div className="text-xl font-medium mb-1">{event.title}</div>
-                    <div className="flex flex-wrap gap-x-4 text-gray-300 text-sm">
+                  
+                  {/* Event details - responsive padding and text sizes */}
+                  <div className="flex-1 p-2 sm:p-3 lg:p-4 lg:pl-5 flex flex-col justify-center bg-[#101926]">
+                    <div className="text-sm sm:text-base lg:text-xl font-medium mb-1 line-clamp-2">{event.title}</div>
+                    <div className="flex flex-wrap gap-x-2 lg:gap-x-4 text-gray-300 text-xs sm:text-sm">
                       {event.time && (
                         <span className="flex items-center">
                           <svg
-                            className="w-4 h-4 mr-1 text-gray-400"
+                            className="w-3 h-3 lg:w-4 lg:h-4 mr-1 text-gray-400"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="none"
@@ -94,13 +98,13 @@ export default function UpcomingEvents() {
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
                           </svg>
-                          {event.time}
+                          <span className="truncate">{event.time}</span>
                         </span>
                       )}
                       {event.venue && (
                         <span className="flex items-center">
                           <svg
-                            className="w-4 h-4 mr-1 text-gray-400"
+                            className="w-3 h-3 lg:w-4 lg:h-4 mr-1 text-gray-400 flex-shrink-0"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="none"
@@ -112,7 +116,7 @@ export default function UpcomingEvents() {
                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                             <circle cx="12" cy="10" r="3" />
                           </svg>
-                          {event.venue}
+                          <span className="truncate">{event.venue}</span>
                         </span>
                       )}
                     </div>

@@ -1,16 +1,17 @@
-// app/admin/page.tsx 
+// app/admin/page.tsx
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
-import EventAdmin from '@/app/components/EventAdmin'  // Make sure path is correct
+import EventAdmin from '@/app/components/EventAdmin'
+import LogoutButton from '@/app/components/LogoutButton'
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions)
-  
+     
   if (!session) {
     redirect('/admin/signin')
   }
-  
+     
   return (
     <div className="min-h-screen bg-[#101926] text-white">
       <div className="max-w-5xl mx-auto p-8">
@@ -26,12 +27,15 @@ export default async function AdminPage() {
             </h1>
             <p className="text-gray-300 mt-1">Admin dashboard for event management</p>
           </div>
-          <div className="flex items-center space-x-2 text-sm">
-            <span className="inline-block h-2 w-2 rounded-full bg-blue-500"></span>
-            <span className="text-gray-300">Admin Access</span>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 text-sm">
+              <span className="inline-block h-2 w-2 rounded-full bg-blue-500"></span>
+              <span className="text-gray-300">Admin Access</span>
+            </div>
+            <LogoutButton />
           </div>
         </div>
-        
+                
         <EventAdmin />
       </div>
     </div>

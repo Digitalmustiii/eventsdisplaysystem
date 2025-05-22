@@ -74,12 +74,13 @@ export default function Header() {
       return (
         <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
           <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
-          <Sun className="text-yellow-300 drop-shadow-xl filter" size={42} strokeWidth={1.5} />
+          <Sun className="text-yellow-300 drop-shadow-xl filter sm:w-8 sm:h-8 w-6 h-6" strokeWidth={1.5} />
         </div>
       )
     }
     
     const weatherId = weatherData.weather[0].id;
+    const iconSize = "sm:w-8 sm:h-8 w-6 h-6";
     
     // Clear
     if (weatherId >= 800 && weatherId <= 802) {
@@ -87,8 +88,7 @@ export default function Header() {
         <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
           <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
           <Sun 
-            className="text-yellow-300 drop-shadow-xl" 
-            size={42} 
+            className={`text-yellow-300 drop-shadow-xl ${iconSize}`}
             strokeWidth={1.5}
             style={{ filter: 'drop-shadow(0 0 8px rgba(252, 211, 77, 0.6))' }}
           />
@@ -101,8 +101,7 @@ export default function Header() {
         <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
           <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
           <Cloud 
-            className="text-gray-200 drop-shadow-lg" 
-            size={42} 
+            className={`text-gray-200 drop-shadow-lg ${iconSize}`}
             strokeWidth={1.5} 
             style={{ filter: 'drop-shadow(0 0 4px rgba(229, 231, 235, 0.5))' }}
           />
@@ -115,8 +114,7 @@ export default function Header() {
         <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
           <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
           <CloudRain 
-            className="text-blue-300 drop-shadow-lg" 
-            size={42} 
+            className={`text-blue-300 drop-shadow-lg ${iconSize}`}
             strokeWidth={1.5}
             style={{ filter: 'drop-shadow(0 0 4px rgba(147, 197, 253, 0.5))' }}
           />
@@ -129,8 +127,7 @@ export default function Header() {
         <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
           <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
           <CloudLightning 
-            className="text-yellow-400 drop-shadow-lg" 
-            size={42} 
+            className={`text-yellow-400 drop-shadow-lg ${iconSize}`}
             strokeWidth={1.5}
             style={{ filter: 'drop-shadow(0 0 6px rgba(251, 191, 36, 0.6))' }}
           />
@@ -143,8 +140,7 @@ export default function Header() {
         <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
           <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
           <CloudSnow 
-            className="text-blue-100 drop-shadow-lg" 
-            size={42} 
+            className={`text-blue-100 drop-shadow-lg ${iconSize}`}
             strokeWidth={1.5}
             style={{ filter: 'drop-shadow(0 0 4px rgba(219, 234, 254, 0.6))' }}
           />
@@ -157,8 +153,7 @@ export default function Header() {
         <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
           <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
           <CloudFog 
-            className="text-gray-300 drop-shadow-lg" 
-            size={42} 
+            className={`text-gray-300 drop-shadow-lg ${iconSize}`}
             strokeWidth={1.5}
             style={{ filter: 'drop-shadow(0 0 4px rgba(209, 213, 219, 0.5))' }}
           />
@@ -170,8 +165,7 @@ export default function Header() {
       <div className="relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-black p-1 rounded-full shadow-lg">
         <div className="absolute inset-0 bg-gradient-to-t from-blue-800 to-transparent opacity-30 rounded-full" />
         <Sun 
-          className="text-yellow-300 drop-shadow-xl" 
-          size={42} 
+          className={`text-yellow-300 drop-shadow-xl ${iconSize}`}
           strokeWidth={1.5}
           style={{ filter: 'drop-shadow(0 0 8px rgba(252, 211, 77, 0.6))' }}
         />
@@ -188,62 +182,133 @@ export default function Header() {
   }
 
   return (
-    <header className="flex w-full h-24 text-white select-none overflow-hidden font-[Georgia]">
-      {/* Left: Logo + School Name (Black Background) */}
-      <div className="flex items-center bg-black px-8 h-full">
-        <div className="flex items-center space-x-4">
-          <Image
-            src="/logo.png"
-            alt="UESTC"
-            width={80}
-            height={80}
-            className="object-contain"
-          />
-          <h1 className="text-3xl font-bold uppercase tracking-wide">UESTC</h1>
+    <header className="flex flex-col lg:flex-row w-full lg:h-24 h-auto text-white select-none overflow-hidden font-[Georgia]">
+      {/* Mobile/Tablet Layout */}
+      <div className="lg:hidden w-full">
+        {/* Top row: Logo + School Name */}
+        <div className="flex items-center justify-center bg-black px-4 py-3">
+          <div className="flex items-center space-x-3">
+            <Image
+              src="/logo.png"
+              alt="UESTC"
+              width={40}
+              height={40}
+              className="object-contain"
+            />
+            <h1 className="text-2xl sm:text-3xl font-bold uppercase tracking-wide">UESTC</h1>
+          </div>
         </div>
-      </div>
-      
-      {/* Center: Weather (Black Background) - Properly aligned with right side */}
-      <div className="flex-1 bg-black h-full">
-        {/* This div takes all the space and pushes the weather to align with right side */}
-        <div className="w-full h-full flex justify-end items-center">
-          <div className="flex items-center space-x-5 pr-12">
+        
+        {/* Bottom row: Weather + Date/Time + Deadline */}
+        <div 
+          className="flex items-center justify-between px-4 py-2"
+          style={{
+            background: 'linear-gradient(to right, #163E8C, #0367A6)'
+          }}
+        >
+          {/* Weather */}
+          <div className="flex items-center space-x-2">
             <div className="flex flex-col items-center">
               {getWeatherIcon()}
-              <span className="mt-1 text-lg font-semibold" style={{ 
+              <span className="text-xs font-semibold" style={{ 
                 textShadow: '0 1px 3px rgba(0,0,0,0.5)',
                 fontVariantNumeric: 'tabular-nums' 
               }}>
                 {getTemperature()}°
               </span>
             </div>
-            
-            <div className="text-base font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>
-              Chengdu, China
+            <div className="text-xs font-medium hidden sm:block" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>
+              Chengdu
+            </div>
+          </div>
+          
+          {/* Date/Time */}
+          <div className="flex flex-col items-end text-right">
+            <div className="text-lg sm:text-xl font-bold" style={{ 
+              textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              fontVariantNumeric: 'tabular-nums',
+              letterSpacing: '0.5px'
+            }}>
+              {dateStr}
+            </div>
+            <div className="text-base sm:text-lg font-semibold mt-1" style={{ 
+              textShadow: '0 1px 3px rgba(0,0,0,0.3)',
+              fontVariantNumeric: 'tabular-nums'
+            }}>
+              {timeStr}
             </div>
           </div>
         </div>
       </div>
-      
-      {/* Angled divider */}
-      <div 
-        className="h-full"
-        style={{
-          width: '30px',
-          background: 'linear-gradient(to bottom right, black 49%, #163E8C 51%)'
-        }}
-      />
-      
-      {/* Right: Date/Time + Deadline (Blue Background with Gradient) */}
-      <div 
-        className="flex flex-col items-end justify-center px-10 h-full"
-        style={{
-          background: 'linear-gradient(to right, #163E8C, #0367A6)'
-        }}
-      >
-        <div className="text-2xl font-medium">{dateStr} &nbsp;&nbsp;{timeStr}</div>
-        <div className="text-md uppercase tracking-wide font-medium mt-2">
-          MBA APPLICATION DEADLINE: March 21
+
+      {/* Desktop Layout */}
+      <div className="hidden lg:flex w-full h-24">
+        {/* Left: Logo + School Name (Black Background) */}
+        <div className="flex items-center bg-black px-8 h-full">
+          <div className="flex items-center space-x-4">
+            <Image
+              src="/logo.png"
+              alt="UESTC"
+              width={80}
+              height={80}
+              className="object-contain"
+            />
+            <h1 className="text-7xl font-bold uppercase tracking-wide">UESTC</h1>
+          </div>
+        </div>
+        
+        {/* Center: Weather (Black Background) - Properly aligned with right side */}
+        <div className="flex-1 bg-black h-full">
+          {/* This div takes all the space and pushes the weather to align with right side */}
+          <div className="w-full h-full flex justify-end items-center">
+            <div className="flex items-center space-x-5 pr-12">
+              <div className="flex flex-col items-center">
+                {getWeatherIcon()}
+                <span className="mt-1 text-lg font-semibold" style={{ 
+                  textShadow: '0 1px 3px rgba(0,0,0,0.5)',
+                  fontVariantNumeric: 'tabular-nums' 
+                }}>
+                  {getTemperature()}°
+                </span>
+              </div>
+              
+              <div className="text-base font-medium" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}>
+                Chengdu, China
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Angled divider */}
+        <div 
+          className="h-full"
+          style={{
+            width: '30px',
+            background: 'linear-gradient(to bottom right, black 49%, #163E8C 51%)'
+          }}
+        />
+        
+        {/* Right: Date/Time (Blue Background with Gradient) */}
+        <div 
+          className="flex flex-col items-center justify-center px-12 h-full min-w-max"
+          style={{
+            background: 'linear-gradient(to right, #163E8C, #0367A6)'
+          }}
+        >
+          <div className="text-4xl font-bold mb-2" style={{ 
+            textShadow: '0 2px 8px rgba(0,0,0,0.4)',
+            fontVariantNumeric: 'tabular-nums',
+            letterSpacing: '1px'
+          }}>
+            {dateStr}
+          </div>
+          <div className="text-3xl font-semibold" style={{ 
+            textShadow: '0 2px 6px rgba(0,0,0,0.3)',
+            fontVariantNumeric: 'tabular-nums',
+            letterSpacing: '0.5px'
+          }}>
+            {timeStr}
+          </div>
         </div>
       </div>
     </header>
