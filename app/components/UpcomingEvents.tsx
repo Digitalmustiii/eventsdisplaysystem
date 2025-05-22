@@ -1,4 +1,3 @@
-//upcomingevents.tsx
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -14,6 +13,21 @@ export type Event = {
 export default function UpcomingEvents() {
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
+  const [maxEvents, setMaxEvents] = useState(5) // Default to desktop view
+
+  // Set max events based on screen size
+  useEffect(() => {
+    const updateMaxEvents = () => {
+      setMaxEvents(window.innerWidth < 1024 ? 3 : 5)
+    }
+
+    // Set initial value
+    updateMaxEvents()
+
+    // Listen for window resize
+    window.addEventListener('resize', updateMaxEvents)
+    return () => window.removeEventListener('resize', updateMaxEvents)
+  }, [])
 
   useEffect(() => {
     setLoading(true)
@@ -24,13 +38,12 @@ export default function UpcomingEvents() {
         const sorted = data.sort(
           (a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime()
         )
-        // Take only the first 5 events for desktop, 3 for mobile
-        const maxEvents = window.innerWidth < 1024 ? 3 : 5
+        // Take only the first maxEvents
         setEvents(sorted.slice(0, maxEvents))
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false))
-  }, [])
+  }, [maxEvents])
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr)
@@ -52,14 +65,14 @@ export default function UpcomingEvents() {
       <div className="flex-1 flex flex-col">
         {loading ? (
           <div className="h-full flex flex-col">
-            {/* Show fewer loading items on mobile */}
-            {Array.from({ length: window.innerWidth < 1024 ? 3 : 5 }).map((_, i) => (
+            {/* Show loading items based on maxEvents */}
+            {Array.from({ length: maxEvents }).map((_, i) => (
               <div
                 key={i}
                 className="flex border-b border-gray-600 lg:h-1/5 h-1/3"
               >
                 <div className="w-full flex justify-center items-center">
-                  {Math.floor((window.innerWidth < 1024 ? 3 : 5) / 2) === i && <span className="text-sm lg:text-base">Loading events...</span>}
+                  {Math.floor(maxEvents / 2) === i && <span className="text-sm lg:text-base">Loading events...</span>}
                 </div>
               </div>
             ))}

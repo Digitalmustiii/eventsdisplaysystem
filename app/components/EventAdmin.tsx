@@ -1,4 +1,3 @@
-//components/EventAdmin.tsx
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
@@ -24,21 +23,21 @@ export default function EventAdmin() {
   const [error, setError] = useState('')
 
   // Get current date in Chengdu timezone (UTC+8)
-  const getChengduDate = () => {
+  const getChengduDate = useCallback(() => {
     const now = new Date()
     // Convert to Chengdu time (UTC+8)
     const chengduTime = new Date(now.getTime() + (8 * 60 * 60 * 1000) + (now.getTimezoneOffset() * 60 * 1000))
     return chengduTime
-  }
+  }, [])
 
   // Get minimum date (today in Chengdu timezone)
-  const getMinDate = () => {
+  const getMinDate = useCallback(() => {
     const chengduDate = getChengduDate()
     return format(chengduDate, 'yyyy-MM-dd')
-  }
+  }, [getChengduDate])
 
   // Check if an event has expired based on Chengdu time
-  const isEventExpired = (eventDate: string, eventTime?: string) => {
+  const isEventExpired = useCallback((eventDate: string, eventTime?: string) => {
     const chengduNow = getChengduDate()
     const eventDateTime = new Date(eventDate)
     
@@ -61,7 +60,7 @@ export default function EventAdmin() {
     }
     
     return chengduNow > eventDateTime
-  }
+  }, [getChengduDate])
 
   const fetchEvents = useCallback(() => {
     setLoading(true)
@@ -104,7 +103,7 @@ export default function EventAdmin() {
     if (expiredEvents.length > 0) {
       await fetchEvents() // Refresh the list
     }
-  }, [events, fetchEvents])
+  }, [events, fetchEvents, isEventExpired])
 
   useEffect(() => {
     fetchEvents()
